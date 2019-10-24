@@ -1,0 +1,20 @@
+# parameters
+nCells = 2,2                    # number of cells in x and y directtion
+physicalSize = 1.0,1.0          # physical size of the domain
+re = 1000                       # reynolds number
+endTime = 10.0                  # end time of the simulation
+tau = 0.5                       # safety factor for time step width
+maximumDt = 0.1                 # maximum time step width
+g = 0.0,0.0                     # external forces
+discretizationType = "DC"       # CD = CentralDifferences and DC = DonorCell
+alphaDC = 0.5                   # factor for donor-cell scheme
+
+dirichletBcBottom = 0.0,0.0     # prescribed values of u,v at bottom of domain
+dirichletBcTop = 1.0,0.0        # prescribed values of u,v at top of domain
+dirichletBcLeft = 0.0,0.0       # prescribed values of u,v at left of domain
+dirichletBcRight = 0.0,0.0      # prescribed values of u,v at right of domain
+
+pressureSolver = "SOR"          # which pressure solver to use, "GaussSeidel" or "SOR"
+omegaSOR = 1.0                  # overrelaxation factor
+epsilonTol = 1e-5               # tolerance for the residual in the pressure solver
+maxPressureIterations = 1e5     # maximum number of iterations in the solver
