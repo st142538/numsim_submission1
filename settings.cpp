@@ -5,6 +5,18 @@
 #include <algorithm>
 #include <string>
 
+// parses the parameterValue into a tuple from format a,b to the specified type T
+// this type has to be numerical, e.g. double!
+template<typename T>
+std::array<T,2> parseTuple(std::string parameterValue)
+{
+    int kommaSignIndex = parameterValue.find(',');
+    std::string firstValue = parameterValue.substr(0, kommaSignIndex);
+    std::string secondValue = parameterValue.substr(kommaSignIndex + 1, parameterValue.size());
+    std::array<T,2> tuple{(T) atof(firstValue.c_str()), (T) atof(secondValue.c_str())};
+    return tuple;
+}
+
 void Settings::loadFromFile(std::string filename)
 {
     // open file
@@ -41,7 +53,7 @@ void Settings::loadFromFile(std::string filename)
 
         // truncate string at '#'
         int commentSignIndex = line.find('#');
-        line = std::string(line.begin(), commentSignIndex);
+        line = line.substr(0, commentSignIndex);
 
         // if line does not contain a single '=' sign, skip line
         if (std::count(line.begin(), line.end(), '=') != 1)
@@ -54,8 +66,11 @@ void Settings::loadFromFile(std::string filename)
         std::string parameterValue;
 
         int equalSignIndex = line.find('=');
-        parameterName = line.substr(line.begin(), equalSignIndex);
-        parameterValue = line.substr(equalSignIndex, line.end());
+        parameterName = line.substr(0, equalSignIndex);
+        parameterValue = line.substr(equalSignIndex + 1, line.size());
+
+        //std::cout << parameterName << " " << parameterValue << std::endl;
+        //continue;
 
         // parse all the parameters
         if (parameterName == "nCells")
@@ -68,19 +83,19 @@ void Settings::loadFromFile(std::string filename)
         }
         else if (parameterName == "re")
         {
-            re = atof(parameterValue);
+            re = atof(parameterValue.c_str());
         }
         else if (parameterName == "endTime")
         {
-            endTime = atof(parameterValue);
+            endTime = atof(parameterValue.c_str());
         }
         else if (parameterName == "tau")
         {
-            tau = atof(parameterValue);
+            tau = atof(parameterValue.c_str());
         }
         else if (parameterName == "maximumDt")
         {
-            maximumDt = atof(parameterValue);
+            maximumDt = atof(parameterValue.c_str());
         }
         else if (parameterName == "g")
         {
@@ -92,7 +107,7 @@ void Settings::loadFromFile(std::string filename)
         }
         else if (parameterName == "alphaDC")
         {
-            alphaDC = atof(parameterValue);
+            alphaDC = atof(parameterValue.c_str());
         }
         else if (parameterName == "dirichletBcBottom")
         {
@@ -116,27 +131,17 @@ void Settings::loadFromFile(std::string filename)
         }
         else if (parameterName == "omegaSOR")
         {
-            omegaSOR = atof(parameterValue);
+            omegaSOR = atof(parameterValue.c_str());
         }
         else if (parameterName == "epsilonTol")
         {
-            epsilonTol = atof(parameterValue);
+            epsilonTol = atof(parameterValue.c_str());
         }
         else if (parameterName == "maxPressureIterations")
         {
-            maxPressureIterations = atoi(parameterValue);
+            maxPressureIterations = atoi(parameterValue.c_str());
         }
     }
-}
-
-template<typename T>
-std::array<T,2> Settings::parseTuple(std::string parameterValue)
-{
-    int kommaSignIndex = parameterValue.find(',');
-    firstValue = parameterValue.substr(parameterValue.begin(), kommaSignIndex);
-    secondValue = parameterValue.substr(kommaSignIndex, parameterValue.end());
-    std::array<T,2> tuple{(T) atof(firstValue), (T) atof(secondValue)};
-    return tuple;
 }
 
 void Settings::printSettings()
@@ -149,11 +154,12 @@ void Settings::printSettings()
     << ", left: ("  << dirichletBcLeft[0] << "," << dirichletBcLeft[1] << ")"
     << ", right: ("  << dirichletBcRight[0] << "," << dirichletBcRight[1] << ")" << std::endl
     << "  discretizationType: " << discretizationType << ", alphaDC: " << alphaDC << std::endl
-    << "  pressureSolver: " << pressureSolver << ", omegaSOR: " << omegaSOR << ", epsilonTol: " << epsilonTol << ", maximumPressureIterations: " << maximumPressureIterations << std::endl;
+    << "  pressureSolver: " << pressureSolver << ", omegaSOR: " << omegaSOR << ", epsilonTol: " << epsilonTol << ", maxPressureIterations: " << maxPressureIterations << std::endl;
 }
 
-void main(int argc, char *argv[]) 
+int main(int argc, char *argv[]) 
 {
     Settings settings;
     settings.loadFromFile("parameters.txt");
+    settings.printSettings();
 }
