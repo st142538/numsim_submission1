@@ -16,6 +16,12 @@ public:
     //! get the size
     std::array<int,2> size() const;
 
+    //! get the size in x direction
+    int sizeX() const;
+
+    //! get the size in y direction
+    int sizeY() const;
+
     //! access the value at coordinate (i,j), declared not const, i.e. the value can be changed
     double &operator()(int i, int j);
 

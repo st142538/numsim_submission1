@@ -1,4 +1,4 @@
-#include "storage/array2d.h"
+#include "array2d.h"
 
 #include <cassert>
 
@@ -13,6 +13,18 @@ Array2D::Array2D(std::array<int,2> size) :
 std::array<int,2> Array2D::size() const
 {
     return size_;
+}
+
+//! get the size in x direction
+int Array2D::sizeX() const
+{
+    return size_[0];
+}
+
+//! get the size in y direction
+int Array2D::sizeY() const
+{
+    return size_[1];
 }
 
 double &Array2D::operator()(int i, int j)

@@ -156,10 +156,3 @@ void Settings::printSettings()
     << "  discretizationType: " << discretizationType << ", alphaDC: " << alphaDC << std::endl
     << "  pressureSolver: " << pressureSolver << ", omegaSOR: " << omegaSOR << ", epsilonTol: " << epsilonTol << ", maxPressureIterations: " << maxPressureIterations << std::endl;
 }
-
-int main(int argc, char *argv[]) 
-{
-    Settings settings;
-    settings.loadFromFile("parameters.txt");
-    settings.printSettings();
-}
