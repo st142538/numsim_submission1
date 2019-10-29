@@ -23,10 +23,9 @@ Computation::Computation(std::string parameterFileName) : settings_()
     {
         discretization_ = std::make_shared<CentralDifferences>(nCellsWithBoundary, meshWidth_);
     }
-    else if (settings_.discretizationType == "DC")
+    else
     {
         discretization_ = std::make_shared<DonorCell>(nCellsWithBoundary, meshWidth_, settings_.alphaDC);
-        std::cout << "constructor finished" << std::endl;
     }
 }
 
@@ -153,7 +152,7 @@ void Computation::runSimulation()
         discretization_->p.print();
     }
 
-    // test u field variable
+    // test v field variable
     {
         discretization_->v(1,1) = 2.0;
         discretization_->v(2,1) = 4.0; 

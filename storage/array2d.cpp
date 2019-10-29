@@ -31,7 +31,6 @@ int Array2D::sizeY() const
 double &Array2D::operator()(int i, int j)
 {
     const int index = j*size_[0] + i;
-    std::cout << "finished" << std::endl;
 
     // assert that indices are in range
     assert(0 <= i && i < size_[0]);

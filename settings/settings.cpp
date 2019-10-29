@@ -69,9 +69,6 @@ void Settings::loadFromFile(std::string filename)
         parameterName = line.substr(0, equalSignIndex);
         parameterValue = line.substr(equalSignIndex + 1, line.size());
 
-        //std::cout << parameterName << " " << parameterValue << std::endl;
-        //continue;
-
         // parse all the parameters
         if (parameterName == "nCells")
         {
