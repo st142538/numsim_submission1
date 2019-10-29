@@ -35,7 +35,7 @@ double DonorCell::computeDv2Dy(int i, int j) const
 double DonorCell::computeDuvDx(int i, int j) const
 {
     double avgUTop = (u(i,j+1) + u(i,j)) / 2.0;
-    double avgUTop2 = (u(i-1,j+1) + (i-1,j)) / 2.0;
+    double avgUTop2 = (u(i-1,j+1) + u(i-1,j)) / 2.0;
     double avgVRightPlus = (v(i,j) + v(i+1,j)) / 2.0; 
     double avgVRightMinus = (v(i,j) - v(i+1,j)) / 2.0; 
     double avgVLeftPlus = (v(i-1,j) + v(i,j)) / 2.0; 

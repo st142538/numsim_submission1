@@ -1,9 +1,10 @@
 #include "array2d.h"
 
 #include <cassert>
+#include <iostream>
 
 Array2D::Array2D(std::array<int,2> size) :
-  size_(size)
+    size_(size)
 {
     // allocate data, initialize to 0
     data_.resize(size_[0]*size_[1], 0.0);
@@ -30,6 +31,7 @@ int Array2D::sizeY() const
 double &Array2D::operator()(int i, int j)
 {
     const int index = j*size_[0] + i;
+    std::cout << "finished" << std::endl;
 
     // assert that indices are in range
     assert(0 <= i && i < size_[0]);

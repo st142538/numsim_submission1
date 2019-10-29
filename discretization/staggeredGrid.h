@@ -20,15 +20,8 @@ public:
     //! constructor
     StaggeredGrid(std::array<int,2> size, std::array<double,2> meshWidth);
 
-    //! sets/updates the boundaries for the pressure field p
-    void setPBoundaries();
-
-    //! sets/updates the boundaries for the velocity fields u and v
-    void setUVBoundaries(
-        std::array<double,2> bottom,
-        std::array<double,2> top,
-        std::array<double,2> left,
-        std::array<double,2> right);
+    //! destructor
+    ~StaggeredGrid();
 
 protected:
     std::array<double,2> meshWidth_;
