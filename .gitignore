@@ -33,3 +33,7 @@
 
 # vscode files
 *.json
+
+# our executable
+numsim_debug
+numsim_release

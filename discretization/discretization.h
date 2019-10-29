@@ -1,6 +1,7 @@
 #pragma once
 
 #include "staggeredGrid.h"
+#include <cmath>
 
 class Discretization :
     public StaggeredGrid
@@ -33,4 +34,10 @@ public:
 
     //! compute the 2nd derivative ∂² v / ∂x²
     virtual double computeD2vDx2(int i, int j) const;
+
+    //! compute the 1st derivative ∂ p / ∂x
+    virtual double computeDpDx(int i, int j) const;
+
+    //! compute the 1st derivative ∂ p / ∂y
+    virtual double computeDpDy(int i, int j) const;
 };

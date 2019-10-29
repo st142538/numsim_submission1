@@ -29,4 +29,7 @@ public:
         std::array<double,2> top,
         std::array<double,2> left,
         std::array<double,2> right);
+
+protected:
+    std::array<double,2> meshWidth_;
 };
