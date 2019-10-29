@@ -1,6 +1,6 @@
 #pragma once
 
-#include "fieldVariable.h"
+#include "../storage/fieldVariable.h"
 #include <vector>
 #include <array>
 
@@ -18,7 +18,7 @@ public:
     FieldVariable rhs;  //< field varaible for the rhs
 
     //! constructor
-    StaggeredGrid(std::array<int,2> size);
+    StaggeredGrid(std::array<int,2> size, std::array<double,2> meshWidth);
 
     //! sets/updates the boundaries for the pressure field p
     void setPBoundaries();

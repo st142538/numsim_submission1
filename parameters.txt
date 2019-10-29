@@ -1,5 +1,5 @@
 # parameters
-nCells = 2,2                    # number of cells in x and y directtion
+nCells = 2,2                    # number of cells in x and y directtion excl. boundary
 physicalSize = 1.0,1.0          # physical size of the domain
 re = 1000                       # reynolds number
 endTime = 10.0                  # end time of the simulation

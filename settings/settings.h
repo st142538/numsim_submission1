@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <array>
+#include <string>
 
 /** All settings that parametrize a simulation run.
  */

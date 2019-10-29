@@ -3,6 +3,7 @@
 #include "array2d.h"
 #include <vector>
 #include <array>
+#include <iostream>
 
 /** This class represents a field variable of double values.
  *  Internally they use the array2d as memory type.
@@ -13,8 +14,15 @@
 class FieldVariable : 
     public Array2D
 {
-public:
+    private:
 
+    const std::array<double,2> origin_;
+    const std::array<double,2> meshWidth_;
+
+public:
     //! constructor
-    FieldVariable(std::array<int,2> size);
+    FieldVariable(std::array<int,2> size, std::array<double,2> origin, std::array<double,2> meshWidth);
+
+    //! prints the content of the field variable
+    void print();
 };

@@ -1,55 +1,54 @@
-#include "storage/staggeredGrid.h"
-#include "settings.h"
+#include "computation.h"
 
-template<typename T>
-void PrintVectorAsMatrix(T *vec, const unsigned int n)
+Computation::Computation(std::string parameterFileName) : settings()
 {
-    std::cout.precision(2);
-    std::cout << std::scientific;
-    for (unsigned int i = n + 2; i >= 1 ; --i) {
-        for (unsigned int j = 0; j < n + 2; ++j) {
-            unsigned int index = (i - 1) * (n + 2) + j;
-            // marke boundary different than inner values
-            if (i == 1 | j == 0 | i == n + 2 || j == n + 1) {
-                // blue background, magenta foreground
-                std::cout << "\033[42;35m";
-            } else {
-                // blue background, magenta foreground
-                std::cout << "\033[43;34m";
-            }
+    settings.loadFromFile(parameterFileName);
+}
 
-            // add 0 if neccessary
-            if (((double) vec[index]) >= 0.0) {
-                std::cout << '+' << (double) vec[index] << std::scientific << " ";
-            } else {
-                std::cout << (double) vec[index] << std::scientific << " ";
-            }
-            // default background, default foreground
-            std::cout << "\033[49;39m";
-        }
-        std::cout << std::endl;
+std::array<double,2> Computation::computeMeshWidth()
+{
+    double dx = settings.physicalSize[0] / settings.nCells[0];
+    double dy = settings.physicalSize[1] / settings.nCells[1];
+    return { dx, dy };
+}
+
+void Computation::solve()
+{   
+    // test p field variable
+    if (false)
+    {
+        StaggeredGrid grid({ settings.nCells[0] + 2, settings.nCells[1] + 2 }, computeMeshWidth());
+
+        grid.p(1,1) = 6.0;
+        grid.p(2,1) = 7.0; 
+        grid.p(1,2) = 10.0; 
+        grid.p(2,2) = 11.0; 
+
+        grid.p.print();
+        std::cout << std::endl << std::endl;
+        grid.setPBoundaries();
+        //grid.setUVBoundaries(settings.dirichletBcBottom, settings.dirichletBcTop, settings.dirichletBcLeft, settings.dirichletBcRight);
+        grid.p.print();
     }
-    std::cout.unsetf(std::ios_base::floatfield);
-}
 
-void testSettings()
-{
-    Settings settings;
-    settings.loadFromFile("parameters.txt");
-    settings.printSettings();
-}
+    // test u field variable
+    {
+        StaggeredGrid grid({ settings.nCells[0] + 2, settings.nCells[1] + 2 }, computeMeshWidth());
 
-void testStaggeredGrid()
-{
-    Settings settings;
-    settings.loadFromFile("parameters.txt");
+        grid.v(1,1) = 2.0;
+        grid.v(2,1) = 4.0; 
+        grid.v(1,2) = 6.0; 
+        grid.v(2,2) = 8.0; 
 
-    // here should nCells -> nCells + 2 for x and y direction
-    StaggeredGrid grid(settings.nCells);
-    grid.setPBoundaries();
+        grid.v.print();
+        std::cout << std::endl << std::endl;
+        grid.setUVBoundaries(settings.dirichletBcBottom, settings.dirichletBcTop, settings.dirichletBcLeft, settings.dirichletBcRight);
+        grid.v.print();
+    }
 }
 
 int main(int argc, char *argv[]) 
 {
-    testStaggeredGrid();
+    Computation comp("parameters.txt");
+    comp.solve();
 }
