@@ -9,13 +9,17 @@ void Computation::computeMeshWidth()
 
 void Computation::computeTimeStepWidth()
 {
+    // compute all four upper limits for the time step width
     double upper_limit1 = 0.5 * settings_.re 
                             * std::pow(meshWidth_[0]*meshWidth_[1],2) 
                             / (std::pow(meshWidth_[0],2) + std::pow(meshWidth_[1],2));
-    double upper_limit2 = meshWidth_[0] / std::abs(discretization_->u.max());
-    double upper_limit3 = meshWidth_[1] / std::abs(discretization_->v.max());
+    double max_abs_u = std::max(std::abs(discretization_->u.min()), std::abs(discretization_->u.max()));
+    double max_abs_v = std::max(std::abs(discretization_->v.min()), std::abs(discretization_->v.max()));
+    double upper_limit2 = meshWidth_[0] / max_abs_u;
+    double upper_limit3 = meshWidth_[1] / max_abs_v;
     double upper_limit4 = settings_.maximumDt;
 
+    // set the time step width to the minimum of all four possibilities times safety factor tau
     dt_ = settings_.tau * std::min( std::min(upper_limit1,upper_limit2), std::min(upper_limit3, upper_limit4) );
 }
 
@@ -191,7 +195,7 @@ void Computation::testDiscretization()
         discretization_->u(1,1) = 2.0;
         discretization_->u(2,1) = 4.0; 
         discretization_->u(1,2) = 6.0; 
-        discretization_->u(2,2) = 50.0; 
+        discretization_->u(2,2) = -50.0; 
 
         discretization_->u.print();
         std::cout << std::endl << std::endl;
@@ -200,10 +204,12 @@ void Computation::testDiscretization()
         std::cout << std::endl << std::endl;
     }
 
-    // test array2D max()
+    // test array2D max(), min()
     {
         std::cout << "max(p) = " << discretization_->p.max() << std::endl;
         std::cout << "max(u) = " << discretization_->u.max() << std::endl;
+        std::cout << "min(u) = " << discretization_->u.min() << std::endl;
+        std::cout << "max(|u|) = " << std::max(std::abs(discretization_->u.min()), std::abs(discretization_->u.max())) << std::endl;
     }
 }
 

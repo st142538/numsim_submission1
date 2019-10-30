@@ -28,7 +28,11 @@ public:
     //! get the value at coordinate (i,j), declared const, i.e. it is not possible to change the value
     double operator()(int i, int j) const;
 
+    //! get the maximal value of the 2D array
     double max() const;
+
+    //! get the minimal value of the 2D array
+    double min() const;
 
 protected:
 

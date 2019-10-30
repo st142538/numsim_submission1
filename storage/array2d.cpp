@@ -65,4 +65,17 @@ double Array2D::max() const
     return maximum;
 }
 
+double Array2D::min() const
+{
+    double minimum = data_[0];
+    for (int i = 1; i < size_[0]*size_[1]; ++i)
+    {
+        if (data_[i] < minimum) 
+        {
+            minimum = data_[i];
+        }
+    }
+    return minimum;
+}
+
 

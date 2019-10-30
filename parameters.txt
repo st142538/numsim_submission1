@@ -1,7 +1,7 @@
 # parameters
-nCells = 5,5                    # number of cells in x and y direction inside the physical domain (without boundary cells)
+nCells = 10,10                    # number of cells in x and y direction inside the physical domain (without boundary cells)
 physicalSize = 1.0,1.0          # physical size of the domain
-re = 0.1                       # reynolds number
+re = 1000                       # reynolds number
 endTime = 10.0                  # end time of the simulation
 tau = 0.5                       # safety factor for time step width
 maximumDt = 0.1                 # maximum time step width
