@@ -27,6 +27,9 @@ class Computation
     //! compute and set the F and G field
     void computePreliminaryVelocities();
 
+    //! compute and set the boundary cells of F and G
+    void computePreliminaryVelocitiesBoundary();
+
     //! compute and set the RHS field
     void computerightHandSide();
 

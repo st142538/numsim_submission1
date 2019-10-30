@@ -31,24 +31,47 @@ Computation::Computation(std::string parameterFileName) : settings_()
 
 void Computation::computePreliminaryVelocities()
 {
-    // calculate helper variable A and set F
-    for (int j = 1; j < discretization_->u.sizeY() - 1; ++j)
+    // calculate helper variable A and set F for inner points
+    for (int j = 1; j < discretization_->f.sizeY() - 1; ++j)
     {
-        for (int i = 1; i < discretization_->u.sizeX() - 1; ++i)
+        for (int i = 1; i < discretization_->f.sizeX() - 1; ++i)
         {
-            double A = (discretization_->computeD2uDx2(i,j) + discretization_->computeD2uDy2(i,j)) / settings_.re - discretization_->computeDu2Dx(i,j) - discretization_->computeDuvDy(i,j) + settings_.g[0];
+            double A = (discretization_->computeD2uDx2(i,j) + discretization_->computeD2uDy2(i,j)) / settings_.re 
+                - discretization_->computeDu2Dx(i,j) 
+                - discretization_->computeDuvDy(i,j) 
+                + settings_.g[0];
             discretization_->f(i,j) = discretization_->u(i,j) + dt_ * A;
         }
     }
 
-    // calculate helper variable B and set G
-    for (int j = 1; j < discretization_->v.sizeY() - 1; ++j)
+    // calculate helper variable B and set G for inner points
+    for (int j = 1; j < discretization_->g.sizeY() - 1; ++j)
     {
-        for (int i = 1; i < discretization_->v.sizeX() - 1; ++i)
+        for (int i = 1; i < discretization_->g.sizeX() - 1; ++i)
         {
-            double B = (discretization_->computeD2vDx2(i,j) + discretization_->computeD2vDy2(i,j)) / settings_.re - discretization_->computeDv2Dy(i,j) - discretization_->computeDuvDx(i,j) + settings_.g[1];
+            double B = (discretization_->computeD2vDx2(i,j) + discretization_->computeD2vDy2(i,j)) / settings_.re 
+                - discretization_->computeDv2Dy(i,j) 
+                - discretization_->computeDuvDx(i,j) 
+                + settings_.g[1];
             discretization_->g(i,j) = discretization_->v(i,j) + dt_ * B;
         }
+    }
+}
+
+void Computation::computePreliminaryVelocitiesBoundary()
+{
+    // calculate helper variable A and set F for boundary points
+    for (int j = 0; j < discretization_->f.sizeY(); ++j)
+    {
+        discretization_->f(0,j) = settings_.dirichletBcLeft[0];
+        discretization_->f(discretization_->f.sizeX() - 1,j) = settings_.dirichletBcRight[0];
+    }
+
+    // calculate helper variable B and set G for boundary points
+    for (int i = 0; i < discretization_->g.sizeX(); ++i)
+    {
+        discretization_->g(i,0) = settings_.dirichletBcBottom[1];
+        discretization_->g(i,discretization_->g.sizeY() - 1) = settings_.dirichletBcTop[1];
     }
 }
 
@@ -58,7 +81,11 @@ void Computation::computerightHandSide()
     {
         for (int i = 1; i < discretization_->p.sizeX() - 1; ++i)
         {
-            discretization_->rhs(i,j) = (((discretization_->f(i,j) - discretization_->f(i-1,j)) / meshWidth_[0]) + ((discretization_->g(i,j) - discretization_->g(i,j-1)) / meshWidth_[1])) / dt_;
+            discretization_->rhs(i,j) = 
+                (((discretization_->f(i,j) 
+                - discretization_->f(i-1,j)) / meshWidth_[0]) 
+                + ((discretization_->g(i,j) 
+                - discretization_->g(i,j-1)) / meshWidth_[1])) / dt_;
         }
     }
 }
