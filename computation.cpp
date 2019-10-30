@@ -9,7 +9,14 @@ void Computation::computeMeshWidth()
 
 void Computation::computeTimeStepWidth()
 {
+    double upper_limit1 = 0.5 * settings_.re 
+                            * std::pow(meshWidth_[0]*meshWidth_[1],2) 
+                            / (std::pow(meshWidth_[0],2) + std::pow(meshWidth_[1],2));
+    double upper_limit2 = meshWidth_[0] / std::abs(discretization_->u.max());
+    double upper_limit3 = meshWidth_[1] / std::abs(discretization_->v.max());
+    double upper_limit4 = settings_.maximumDt;
 
+    dt_ = settings_.tau * std::min( std::min(upper_limit1,upper_limit2), std::min(upper_limit3, upper_limit4) );
 }
 
 Computation::Computation(std::string parameterFileName) : settings_()
@@ -163,38 +170,57 @@ void Computation::computeVelocityBoundaries()
     }
 }
 
-void Computation::runSimulation()
-{   
+void Computation::testDiscretization()
+{
     // test p field variable
-    if (false)
     {        
-        discretization_->p(1,1) = 6.0;
-        discretization_->p(2,1) = 7.0; 
-        discretization_->p(1,2) = 10.0; 
-        discretization_->p(2,2) = 11.0; 
+        discretization_->p(1,1) = 1.0;
+        discretization_->p(2,1) = 2.0; 
+        discretization_->p(1,2) = 3.0; 
+        discretization_->p(2,2) = 4.0; 
 
         discretization_->p.print();
         std::cout << std::endl << std::endl;
         computePressureBoundaries();
         discretization_->p.print();
+        std::cout << std::endl << std::endl;
     }
 
-    // test v field variable
+    // test u field variable
     {
-        discretization_->v(1,1) = 2.0;
-        discretization_->v(2,1) = 4.0; 
-        discretization_->v(1,2) = 6.0; 
-        discretization_->v(2,2) = 8.0; 
+        discretization_->u(1,1) = 2.0;
+        discretization_->u(2,1) = 4.0; 
+        discretization_->u(1,2) = 6.0; 
+        discretization_->u(2,2) = 50.0; 
 
-        discretization_->v.print();
+        discretization_->u.print();
         std::cout << std::endl << std::endl;
         computeVelocityBoundaries();
-        discretization_->v.print();
+        discretization_->u.print();
+        std::cout << std::endl << std::endl;
+    }
+
+    // test array2D max()
+    {
+        std::cout << "max(p) = " << discretization_->p.max() << std::endl;
+        std::cout << "max(u) = " << discretization_->u.max() << std::endl;
     }
 }
 
-int main(int argc, char *argv[]) 
+void Computation::testSettings()
 {
-    Computation computation("parameters.txt");
-    computation.runSimulation();
+    settings_.printSettings();
 }
+
+void Computation::testTimestep()
+{
+    std::cout << "previous dt: " << dt_ << std::endl;
+    computeTimeStepWidth();
+    std::cout << "new dt: " << dt_ << std::endl;
+}
+
+void Computation::runSimulation()
+{   
+
+}
+

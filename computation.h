@@ -42,5 +42,10 @@ class Computation
 public:
 
     Computation(std::string parameterFileName);
+    
+    void testDiscretization();
+    void testSettings();
+    void testTimestep();
+
     void runSimulation();
 };
