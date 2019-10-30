@@ -1,12 +1,12 @@
-#include "gaussSeidel.h"
+#include "SOR.h"
 
-GaussSeidel::GaussSeidel(std::shared_ptr<Discretization> discretization) :
-    PressureSolver(discretization)
+SOR::SOR(std::shared_ptr<Discretization> discretization, double omegaSOR) :
+    PressureSolver(discretization), omegaSOR_(omegaSOR)
 {
-
+    
 }
 
-double GaussSeidel::iterate() const
+double SOR::iterate() const
 {
     double factor = 0.5
     * (std::pow(discretization_->meshWidth_[0], 2) * std::pow(discretization_->meshWidth_[1], 2)) 
@@ -19,12 +19,12 @@ double GaussSeidel::iterate() const
     {
         for (int i = 1; i < discretization_->p.sizeX() - 1; ++i)
         {
-            discretization_->p(i,j) = factor 
-                * ((discretization_->p(i-1,j) + discretization_->p(i+1,j)) 
-                    / std::pow(discretization_->meshWidth_[0], 2)
-                    + (discretization_->p(i,j-1) + discretization_->p(i,j+1)) 
-                    / std::pow(discretization_->meshWidth_[1], 2) 
-                    - discretization_->rhs(i,j));
+            discretization_->p(i,j) = (1-omegaSOR_) * discretization_->p(i,j)
+                + omegaSOR_ * factor * ((discretization_->p(i-1,j) + discretization_->p(i+1,j)) 
+                                         / std::pow(discretization_->meshWidth_[0], 2)
+                                     + (discretization_->p(i,j-1) + discretization_->p(i,j+1)) 
+                                         / std::pow(discretization_->meshWidth_[1], 2) 
+                                     - discretization_->rhs(i,j));
         }
     }
 
