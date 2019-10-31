@@ -52,6 +52,7 @@ double Array2D::operator()(int i, int j) const
     return data_[index];
 }
 
+// TODO: change to use vector max and min function
 double Array2D::max() const
 {
     double maximum = data_[0];

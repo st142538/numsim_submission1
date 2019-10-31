@@ -4,6 +4,7 @@
 #include <vector>
 #include <array>
 #include <iostream>
+#include <cmath>
 
 /** This class represents a field variable of double values.
  *  Internally they use the array2d as memory type.
@@ -22,6 +23,10 @@ class FieldVariable :
 public:
     //! constructor
     FieldVariable(std::array<int,2> size, std::array<double,2> origin, std::array<double,2> meshWidth);
+
+    //! get the value at the Cartesian coordinate (x,y).
+    //! The value is linearly interpolated between stored points.
+    double interpolateAt(double x, double y);
 
     //! prints the content of the field variable
     void print();

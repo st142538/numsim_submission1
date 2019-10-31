@@ -9,16 +9,19 @@ void Computation::computeMeshWidth()
 
 void Computation::computeTimeStepWidth()
 {
+    // TODO Notation
     // compute all four upper limits for the time step width
-    double upper_limit1 = 0.5 * settings_.re 
-                            * std::pow(meshWidth_[0]*meshWidth_[1],2) 
-                            / (std::pow(meshWidth_[0],2) + std::pow(meshWidth_[1],2));
+    double upper_limit1 = 0.5 
+        * settings_.re 
+        * std::pow(meshWidth_[0]*meshWidth_[1],2) 
+        / (std::pow(meshWidth_[0],2) + std::pow(meshWidth_[1],2));
     double max_abs_u = std::max(std::abs(discretization_->u.min()), std::abs(discretization_->u.max()));
     double max_abs_v = std::max(std::abs(discretization_->v.min()), std::abs(discretization_->v.max()));
     double upper_limit2 = meshWidth_[0] / max_abs_u;
     double upper_limit3 = meshWidth_[1] / max_abs_v;
     double upper_limit4 = settings_.maximumDt;
 
+    // TODO min auf alle elemente
     // set the time step width to the minimum of all four possibilities times safety factor tau
     dt_ = settings_.tau * std::min( std::min(upper_limit1,upper_limit2), std::min(upper_limit3, upper_limit4) );
 }
@@ -30,13 +33,27 @@ Computation::Computation(std::string parameterFileName) : settings_()
 
     std::array<int,2> nCellsWithBoundary = { settings_.nCells[0] + 2, settings_.nCells[1] + 2 };
 
+    // set dt_ to maximumDt
+    dt_ = settings_.maximumDt;
+
+    // instantiate the discretization
     if (settings_.discretizationType == "CD")
     {
         discretization_ = std::make_shared<CentralDifferences>(nCellsWithBoundary, meshWidth_);
     }
-    else
+    else // means DC
     {
         discretization_ = std::make_shared<DonorCell>(nCellsWithBoundary, meshWidth_, settings_.alphaDC);
+    }
+
+    // instatiate the pressure solver
+    if (settings_.discretizationType == "GaussSeidel")
+    {
+        pressureSolver_ = std::make_shared<GaussSeidel>(discretization_);
+    }
+    else // means SOR
+    {
+        pressureSolver_ = std::make_shared<SOR>(discretization_, settings_.omegaSOR);
     }
 }
 
@@ -225,8 +242,13 @@ void Computation::testTimestep()
     std::cout << "new dt: " << dt_ << std::endl;
 }
 
+void Computation::testInterpolation()
+{
+
+}
+
 void Computation::runSimulation()
 {   
-
+    
 }
 

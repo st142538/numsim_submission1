@@ -4,6 +4,9 @@
 #include "discretization/discretization.h"
 #include "discretization/centralDifferences.h"
 #include "discretization/donorCell.h"
+#include "pressureSolver/pressureSolver.h"
+#include "pressureSolver/gaussSeidel.h"
+#include "pressureSolver/sor.h"
 #include <vector>
 #include <array>
 #include <iostream>
@@ -18,6 +21,7 @@ class Computation
 
     Settings settings_;
     std::shared_ptr<Discretization> discretization_;
+    std::shared_ptr<PressureSolver> pressureSolver_;
     std::array<double,2> meshWidth_;
     double dt_;
 
@@ -46,6 +50,7 @@ public:
     void testDiscretization();
     void testSettings();
     void testTimestep();
+    void testInterpolation();
 
     void runSimulation();
 };
