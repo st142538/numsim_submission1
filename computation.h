@@ -7,6 +7,9 @@
 #include "pressureSolver/pressureSolver.h"
 #include "pressureSolver/gaussSeidel.h"
 #include "pressureSolver/sor.h"
+#include "outputWriter/outputWriter.h"
+#include "outputWriter/outputWriterParaview.h"
+//#include "outputWriter/outputWriterText.h"
 #include <vector>
 #include <array>
 #include <iostream>
@@ -22,6 +25,7 @@ class Computation
     Settings settings_;
     std::shared_ptr<Discretization> discretization_;
     std::shared_ptr<PressureSolver> pressureSolver_;
+    std::shared_ptr<outputWriter> outputWriter_;
     std::array<double,2> meshWidth_;
     double dt_;
 
@@ -42,6 +46,8 @@ class Computation
 
     //! sets/updates the boundaries for the velocity fields u and v
     void computeVelocityBoundaries();
+
+    void computeNewVelocities();
 
 public:
 

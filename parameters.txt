@@ -1,8 +1,8 @@
 # parameters
-nCells = 10,10                    # number of cells in x and y direction inside the physical domain (without boundary cells)
+nCells = 5,5                    # number of cells in x and y direction inside the physical domain (without boundary cells)
 physicalSize = 1.0,1.0          # physical size of the domain
 re = 1000                       # reynolds number
-endTime = 10.0                  # end time of the simulation
+endTime = 0.1                  # end time of the simulation
 tau = 0.5                       # safety factor for time step width
 maximumDt = 0.1                 # maximum time step width
 g = 0.0,0.0                     # external forces
@@ -17,4 +17,5 @@ dirichletBcRight = 0.0,0.0      # prescribed values of u,v at right of domain
 pressureSolver = SOR            # which pressure solver to use, "GaussSeidel" or "SOR"
 omegaSOR = 1.0                  # overrelaxation factor
 epsilonTol = 1e-5               # tolerance for the residual in the pressure solver
-maxPressureIterations = 1e5     # maximum number of iterations in the solver
+maxPressureIterations = 100000  # maximum number of iterations in the solver
+# do NOT delete this line!

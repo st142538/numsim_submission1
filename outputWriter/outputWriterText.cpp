@@ -1,4 +1,4 @@
-#include "outputWriter/outputWriterText.h"
+#include "outputWriterText.h"
 
 #include <iostream>
 #include <fstream>
@@ -25,17 +25,20 @@ void OutputWriterText::writeFile(double currentTime)
 
   // write time
   file << "t: " << currentTime << std::endl;
-
+  // get needed parametres
+  std::array<int,2> nCells = {discretization_->p.sizeX() - 2, discretization_->p.sizeY() - 2};
+  const double dx = discretization_->meshWidth_[0];
+  const double dy = discretization_->meshWidth_[1];
   // write mesh width
-  file << "nCells: " << discretization_->nCells()[0] << "x" << discretization_->nCells()[1] 
-    << ", dx: " << discretization_->dx() << ", dy: " << discretization_->dy() << std::endl << std::endl;
+  file << "nCells: " << nCells[0] << "x" << nCells[1] 
+    << ", dx: " << dx << ", dy: " << dy << std::endl << std::endl;
 
   const int fieldWidth = 9;   // number of characters to use for a single value
 
   // write u
   // ---------
   // write header lines
-  file << "u (" << discretization_->u().size()[0] << "x" << discretization_->u().size()[1] << "): " << std::endl 
+  file << "u (" << discretization_->u.sizeX() << "x" << discretization_->u.sizeY() << "): " << std::endl 
     << std::string(fieldWidth, ' ') << "|";
   for (int i = discretization_->uIBegin(); i < discretization_->uIEnd(); i++)
   {

@@ -1,31 +1,4 @@
 #include "computation.h"
-
-void Computation::computeMeshWidth()
-{
-    double dx = settings_.physicalSize[0] / settings_.nCells[0];
-    double dy = settings_.physicalSize[1] / settings_.nCells[1];
-    meshWidth_ = { dx, dy };
-}
-
-void Computation::computeTimeStepWidth()
-{
-    // TODO Notation
-    // compute all four upper limits for the time step width
-    double upper_limit1 = 0.5 
-        * settings_.re 
-        * std::pow(meshWidth_[0]*meshWidth_[1],2) 
-        / (std::pow(meshWidth_[0],2) + std::pow(meshWidth_[1],2));
-    double max_abs_u = std::max(std::abs(discretization_->u.min()), std::abs(discretization_->u.max()));
-    double max_abs_v = std::max(std::abs(discretization_->v.min()), std::abs(discretization_->v.max()));
-    double upper_limit2 = meshWidth_[0] / max_abs_u;
-    double upper_limit3 = meshWidth_[1] / max_abs_v;
-    double upper_limit4 = settings_.maximumDt;
-
-    // TODO min auf alle elemente
-    // set the time step width to the minimum of all four possibilities times safety factor tau
-    dt_ = settings_.tau * std::min( std::min(upper_limit1,upper_limit2), std::min(upper_limit3, upper_limit4) );
-}
-
 Computation::Computation(std::string parameterFileName) : settings_()
 {
     settings_.loadFromFile(parameterFileName);
@@ -55,7 +28,38 @@ Computation::Computation(std::string parameterFileName) : settings_()
     {
         pressureSolver_ = std::make_shared<SOR>(discretization_, settings_.omegaSOR);
     }
+
+    // instatiate the pressure solver
+    outputWriter_ = std::make_shared<outputWriterParaview>(discretization_);
 }
+
+void Computation::computeMeshWidth()
+{
+    double dx = settings_.physicalSize[0] / settings_.nCells[0];
+    double dy = settings_.physicalSize[1] / settings_.nCells[1];
+    meshWidth_ = { dx, dy };
+}
+
+void Computation::computeTimeStepWidth()
+{
+    // TODO Notation
+    // compute all four upper limits for the time step width
+    double upper_limit1 = 0.5 
+        * settings_.re 
+        * std::pow(meshWidth_[0]*meshWidth_[1],2) 
+        / (std::pow(meshWidth_[0],2) + std::pow(meshWidth_[1],2));
+    double max_abs_u = std::max(std::abs(discretization_->u.min()), std::abs(discretization_->u.max()));
+    double max_abs_v = std::max(std::abs(discretization_->v.min()), std::abs(discretization_->v.max()));
+    double upper_limit2 = meshWidth_[0] / max_abs_u;
+    double upper_limit3 = meshWidth_[1] / max_abs_v;
+    double upper_limit4 = settings_.maximumDt;
+
+    // TODO min auf alle elemente
+    // set the time step width to the minimum of all four possibilities times safety factor tau
+    dt_ = settings_.tau * std::min( std::min(upper_limit1,upper_limit2), std::min(upper_limit3, upper_limit4) );
+}
+
+
 
 void Computation::computePreliminaryVelocities()
 {
@@ -191,6 +195,25 @@ void Computation::computeVelocityBoundaries()
     }
 }
 
+void Computation::computeNewVelocities()
+{
+    for (int j = 1; j < discretization_->u.sizeY() - 1; ++j)
+    {
+        for (int i = 1; i < discretization_->u.sizeX() - 1; ++i)
+        {
+            discretization_->u(i,j) = discretization_->f(i,j) - dt_ * discretization_->computeDpDx(i, j);
+        }
+    }
+
+    for (int j = 1; j < discretization_->v.sizeY() - 1; ++j)
+    {
+        for (int i = 1; i < discretization_->v.sizeX() - 1; ++i)
+        {
+            discretization_->v(i,j) = discretization_->g(i,j) - dt_ * discretization_->computeDpDy(i, j);
+        }
+    }
+}
+
 void Computation::testDiscretization()
 {
     // test p field variable
@@ -244,11 +267,43 @@ void Computation::testTimestep()
 
 void Computation::testInterpolation()
 {
-
+    discretization_->u(1,1) = 1.0;
+    discretization_->u(2,1) = 2.0; 
+    discretization_->u(1,2) = 1.0; 
+    discretization_->u(2,2) = 2.0; 
+    discretization_->u.print();
+    std::cout << "test: " << discretization_->u.interpolateAt(0.5*meshWidth_[0], 0.75*meshWidth_[1]) << std::endl;
 }
 
 void Computation::runSimulation()
 {   
-    
+    double currentTime = 0.0;
+    int step = 0;
+    while (currentTime < settings_.endTime) {
+        computeTimeStepWidth();
+        computeVelocityBoundaries();
+        computePressureBoundaries();
+        computePreliminaryVelocities();
+        computePreliminaryVelocitiesBoundary();
+        computerightHandSide();
+        int it = 0;
+        double squared_residual = 1.0 / 0.0;
+        while ((it < settings_.maxPressureIterations) || (std::sqrt(squared_residual) > settings_.epsilonTol)) {
+            squared_residual = pressureSolver_->iterate();
+            computePressureBoundaries();
+            it++;
+        }
+        computeNewVelocities();
+        currentTime += dt_;
+        step++;
+        // print time step information
+        std::cout << step 
+                << " dt: " << dt_ 
+                << ", current time: " << currentTime 
+                << ", pressure solver iterations: " << it << std::endl;
+
+    }
+    computeVelocityBoundaries();
+    computePressureBoundaries();
 }
 

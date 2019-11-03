@@ -1,4 +1,4 @@
-#include "outputWriter/outputWriter.h"
+#include "outputWriter.h"
 
 #include <iostream>
 

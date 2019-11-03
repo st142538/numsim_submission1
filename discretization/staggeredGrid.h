@@ -23,6 +23,5 @@ public:
     //! destructor
     ~StaggeredGrid();
 
-//protected:
     std::array<double,2> meshWidth_;
 };

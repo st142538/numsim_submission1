@@ -8,11 +8,10 @@ FieldVariable::FieldVariable(std::array<int,2> size, std::array<double,2> origin
 
 double FieldVariable::interpolateAt(double x, double y)
 {
-    // bubabuba
     // calculate corspeonding cell (bottom left point)
     // cartesian (0,0) -> index (0,0) etc.
-    int i = std::floor(x / meshWidth_[0]);
-    int j = std::floor(y / meshWidth_[1]);
+    int i = std::floor((x - origin_[0])/ meshWidth_[0] );
+    int j = std::floor((y - origin_[1])/ meshWidth_[1] );
 
     // calculate cartesian coordinates of the bottom left point
     double blX = i * meshWidth_[0] + origin_[0];
