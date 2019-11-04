@@ -41,6 +41,7 @@ endif(VTK_FOUND)
 
 # install numsim executable in build directory
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${PROJECT_SOURCE_DIR}/../build)
+install(FILES ${PROJECT_SOURCE_DIR}/parameters.txt DESTINATION ${PROJECT_SOURCE_DIR}/../build)
 
 # Add additonial compile options to enable more warnings
 add_compile_options(-Wall -Wextra)

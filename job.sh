@@ -35,5 +35,4 @@ cmake ..
 make install
 
 # Start working
-cd src
-./numsim ../src/parameters.txt
+./numsim parameters.txt

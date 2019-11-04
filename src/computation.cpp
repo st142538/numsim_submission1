@@ -253,7 +253,7 @@ void Computation::testDiscretization()
     }
 }
 
-void Computation::testSettings()
+void Computation::printSettings()
 {
     settings_.printSettings();
 }
@@ -277,6 +277,9 @@ void Computation::testInterpolation()
 
 void Computation::runSimulation()
 {   
+    // begin with time stamp
+    auto start = std::chrono::steady_clock::now();
+
     // start up simulation
     double currentTime = 0.0;
     int step = 0;
@@ -285,7 +288,8 @@ void Computation::runSimulation()
     outputWriter_->writeFile(currentTime);
 
     // time step loop
-    while (currentTime < settings_.endTime) {
+    while (currentTime < settings_.endTime)
+    {
         computeTimeStepWidth();
         computeVelocityBoundaries();
         computePressureBoundaries();
@@ -294,7 +298,8 @@ void Computation::runSimulation()
         computerightHandSide();
         int it = 0;
         double squaredResidual = 1.0 / 0.0;
-        while ((it < settings_.maximumNumberOfIterations) && (std::sqrt(squaredResidual) > settings_.epsilon)) {
+        while ((it < settings_.maximumNumberOfIterations) && (std::sqrt(squaredResidual) > settings_.epsilon))
+        {
             squaredResidual = pressureSolver_->iterate();
             computePressureBoundaries();
             it++;
@@ -308,14 +313,19 @@ void Computation::runSimulation()
 
         // print time step information to console
         std::cout << step 
-                << " | current time: " << currentTime 
-                << ", dt: " << dt_ 
-                << ", pressure solver iterations: " << it << std::endl;
+            << " | current time: " << currentTime 
+            << ", dt: " << dt_ 
+            << ", pressure solver iterations: " << it << std::endl;
         
     }
 
     // end stuff
     computeVelocityBoundaries();
     computePressureBoundaries();
-}
 
+    // stop time
+    auto end = std::chrono::steady_clock::now();
+    std::cout << "Elapsed Time: " 
+        << std::chrono::duration_cast<std::chrono::seconds>(end - start).count() 
+        << " sec" << std::endl;
+}

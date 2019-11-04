@@ -38,7 +38,7 @@ void Settings::loadFromFile(std::string filename)
     // check if file is open now
     if (!file.is_open())
     {
-        std::cout << "Can not open file" << filename << std::endl;
+        std::cout << "Can not open file " << filename << std::endl;
         return;
     }
 

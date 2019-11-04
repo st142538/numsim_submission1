@@ -12,6 +12,6 @@ int main(int argc, char *argv[])
     std::string parametersFilePath = argv[1];
 
     Computation computation(parametersFilePath);
-    computation.testSettings();
-    //computation.runSimulation();
+    computation.printSettings();
+    computation.runSimulation();
 }

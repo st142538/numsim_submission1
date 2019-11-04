@@ -15,6 +15,7 @@
 #include <iostream>
 #include <string>
 #include <memory>
+#include <chrono>
 
 /** This class represents the computation logic.
  */
@@ -47,6 +48,7 @@ class Computation
     //! sets/updates the boundaries for the velocity fields u and v
     void computeVelocityBoundaries();
 
+    //! calculate the new velocities
     void computeNewVelocities();
 
 public:
@@ -54,9 +56,9 @@ public:
     Computation(std::string parameterFileName);
     
     void testDiscretization();
-    void testSettings();
     void testTimestep();
     void testInterpolation();
 
+    void printSettings();
     void runSimulation();
 };
