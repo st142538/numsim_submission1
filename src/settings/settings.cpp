@@ -1,155 +1,203 @@
 #include "settings.h"
-#include <fstream>
-#include <iostream>
-#include <iomanip>
-#include <algorithm>
-#include <string>
 
-// parses the parameterValue into a tuple from format a,b to the specified type T
-// this type has to be numerical, e.g. double!
-template<typename T>
-std::array<T,2> parseTuple(std::string parameterValue)
+std::string trim(const std::string &str, const std::string &whitespace = " \t")
 {
-    int kommaSignIndex = parameterValue.find(',');
-    std::string firstValue = parameterValue.substr(0, kommaSignIndex);
-    std::string secondValue = parameterValue.substr(kommaSignIndex + 1, parameterValue.size());
-    std::array<T,2> tuple{(T) atof(firstValue.c_str()), (T) atof(secondValue.c_str())};
-    return tuple;
+    // get begin of string
+    const auto strBegin = str.find_first_not_of(whitespace);
+    if (strBegin == std::string::npos)
+    {
+        return ""; // no content
+    }
+
+    // get end of string
+    const auto strEnd = str.find_last_not_of(whitespace);
+    const auto strRange = strEnd - strBegin + 1;
+
+    return str.substr(strBegin, strRange);
+}
+
+void split(const std::string &str, std::vector<std::string> &cont, char delim)
+{
+    std::size_t current, previous = 0;
+    current = str.find(delim);
+
+    while (current != std::string::npos)
+    {
+        cont.push_back(str.substr(previous, current - previous));
+        previous = current + 1;
+        current = str.find(delim, previous);
+    }
+
+    cont.push_back(str.substr(previous, current - previous));
 }
 
 void Settings::loadFromFile(std::string filename)
 {
-    // open file
     std::ifstream file(filename.c_str(), std::ios::in);
 
-    // check if file is open
+    // check if file is open now
     if (!file.is_open())
     {
-        std::cout << "Could not open parameter file \"" << filename << "\"." << std::endl;
+        std::cout << "Can not open file" << filename << std::endl;
         return;
     }
 
-    // loop over lines of file
-    for (int lineNo = 0; ; lineNo++)
+    // iterate until file is entierly read
+    // TODO check if last line is read
+    while (!file.eof())
     {
-        // read line
         std::string line;
         getline(file, line);
 
-        // at the end of the file break for loop
-        if (file.eof())
-        {
-            break;
-        }
+        // removes whitespaces at the beginning and at the end
+        line = trim(line);
 
-        // remove whitespace at beginning of line (if there is any)
-        line.erase(remove_if(line.begin(), line.end(), isspace), line.end());
-
-        // if first character is a '#', skip line
-        if (line.front() == '#')
+        // check if line is only comment
+        if (line[0] == '#')
         {
             continue;
         }
 
-        // truncate string at '#'
-        int commentSignIndex = line.find('#');
-        line = line.substr(0, commentSignIndex);
-
-        // if line does not contain a single '=' sign, skip line
-        if (std::count(line.begin(), line.end(), '=') != 1)
+        // check if line contains a equal sign
+        if (line.find_first_of('=') == std::string::npos)
         {
             continue;
         }
 
-        // split line into parameterName and parameterValue
-        std::string parameterName;
-        std::string parameterValue;
+        // split line into left and right side
+        std::vector<std::string> values;
+        split(line, values, '=');
 
-        int equalSignIndex = line.find('=');
-        parameterName = line.substr(0, equalSignIndex);
-        parameterValue = line.substr(equalSignIndex + 1, line.size());
+        // remove whitespaces from right side
+        std::string parameterName = trim(values[0]);
+        split(line, values, '=');
 
-        // parse all the parameters
-        if (parameterName == "nCells")
+        // remove whitespaces from right side
+        std::string parameterValueString = trim(values[1]);
+
+        if (line.find('#'))
         {
-            nCells = parseTuple<int>(parameterValue);
+            std::vector<std::string> value_clean;
+
+            // remove comment from right side
+            split(values[1], value_clean, '#');
+
+            // remove whitespaces from right side
+            parameterValueString = trim(value_clean[0]);
         }
-        else if (parameterName == "physicalSize")
+
+        // parse right hand side
+        const char *parameterValue = parameterValueString.c_str();
+        if (parameterName == "physicalSizeX")
         {
-            physicalSize = parseTuple<double>(parameterValue);
+            this->physicalSize[0] = atof(parameterValue);
         }
-        else if (parameterName == "re")
+        else if ( parameterName == "physicalSizeY")
         {
-            re = atof(parameterValue.c_str());
+            this->physicalSize[1] = atof(parameterValue);
         }
-        else if (parameterName == "endTime")
+        else if ( parameterName == "endTime")
         {
-            endTime = atof(parameterValue.c_str());
+            this->endTime = atof(parameterValue);
         }
-        else if (parameterName == "tau")
+        else if ( parameterName == "re")
         {
-            tau = atof(parameterValue.c_str());
+            this->re = atof(parameterValue);
         }
-        else if (parameterName == "maximumDt")
+        else if ( parameterName == "gX")
         {
-            maximumDt = atof(parameterValue.c_str());
+            this->g[0] = atof(parameterValue);
         }
-        else if (parameterName == "g")
+        else if ( parameterName == "gY")
         {
-            g = parseTuple<double>(parameterValue);
+            this->g[1] = atof(parameterValue);
         }
-        else if (parameterName == "discretizationType")
+        else if ( parameterName == "dirichletBottomX")
         {
-            discretizationType = parameterValue;
+            this->dirichletBcBottom[0] = atof(parameterValue);
         }
-        else if (parameterName == "alphaDC")
+        else if ( parameterName == "dirichletBottomY")
         {
-            alphaDC = atof(parameterValue.c_str());
+            this->dirichletBcBottom[1] = atof(parameterValue);
         }
-        else if (parameterName == "dirichletBcBottom")
+        else if ( parameterName == "dirichletTopX")
         {
-            dirichletBcBottom = parseTuple<double>(parameterValue);
+            this->dirichletBcTop[0] = atof(parameterValue);
         }
-        else if (parameterName == "dirichletBcTop")
+        else if ( parameterName == "dirichletTopY")
         {
-            dirichletBcTop = parseTuple<double>(parameterValue);
+            this->dirichletBcTop[1] = atof(parameterValue);
         }
-        else if (parameterName == "dirichletBcLeft")
+        else if ( parameterName == "dirichletLeftX")
         {
-            dirichletBcLeft = parseTuple<double>(parameterValue);
+            this->dirichletBcLeft[0] = atof(parameterValue);
         }
-        else if (parameterName == "dirichletBcRight")
+        else if ( parameterName == "dirichletLeftY")
         {
-            dirichletBcRight = parseTuple<double>(parameterValue);
+            this->dirichletBcLeft[1] = atof(parameterValue);
         }
-        else if (parameterName == "pressureSolver")
+        else if ( parameterName == "dirichletRightX")
         {
-            pressureSolver = parameterValue;
+            this->dirichletBcRight[0] = atof(parameterValue);
         }
-        else if (parameterName == "omegaSOR")
+        else if ( parameterName == "dirichletRightY")
         {
-            omegaSOR = atof(parameterValue.c_str());
+            this->dirichletBcRight[1] = atof(parameterValue);
         }
-        else if (parameterName == "epsilonTol")
+        else if ( parameterName == "nCellsX")
         {
-            epsilonTol = atof(parameterValue.c_str());
+            this->nCells[0] = (int) atof(parameterValue);
         }
-        else if (parameterName == "maxPressureIterations")
+        else if ( parameterName == "nCellsY")
         {
-            maxPressureIterations = atoi(parameterValue.c_str());
+            this->nCells[1] = (int) atof(parameterValue);
+        }
+        else if ( parameterName == "useDonorCell")
+        {
+            this->useDonorCell = std::strcmp(parameterValue, "true") == 0;
+        }
+        else if ( parameterName == "alpha")
+        {
+            this->alpha = atof(parameterValue);
+        }
+        else if ( parameterName == "tau")
+        {
+            this->tau = atof(parameterValue);
+        }
+        else if ( parameterName == "maximumDt")
+        {
+            this->maximumDt = atof(parameterValue);
+        }
+        else if ( parameterName == "pressureSolver")
+        {
+            this->pressureSolver = parameterValue;
+        }
+        else if ( parameterName == "omega")
+        {
+            this->omega = atof(parameterValue);
+        }
+        else if ( parameterName == "epsilon")
+        {
+            this->epsilon = atof(parameterValue);
+        }
+        else if ( parameterName == "maximumNumberOfIterations")
+        {
+            this->maximumNumberOfIterations = (int) atof(parameterValue);
         }
     }
-}
+};
 
-void Settings::printSettings()
-{
-  std::cout << "Settings: " << std::endl
-    << "  physicalSize: " << physicalSize[0] << " x " << physicalSize[1] << ", nCells: " << nCells[0] << " x " << nCells[1] << std::endl
-    << "  endTime: " << endTime << " s, re: " << re << ", g: (" << g[0] << "," << g[1] << "), tau: " << tau << ", maximum dt: " << maximumDt << std::endl
-    << "  dirichletBC: bottom: (" << dirichletBcBottom[0] << "," << dirichletBcBottom[1]  << ")"
-    << ", top: ("  << dirichletBcTop[0] << "," << dirichletBcTop[1]  << ")"
-    << ", left: ("  << dirichletBcLeft[0] << "," << dirichletBcLeft[1] << ")"
-    << ", right: ("  << dirichletBcRight[0] << "," << dirichletBcRight[1] << ")" << std::endl
-    << "  discretizationType: " << discretizationType << ", alphaDC: " << alphaDC << std::endl
-    << "  pressureSolver: " << pressureSolver << ", omegaSOR: " << omegaSOR << ", epsilonTol: " << epsilonTol << ", maxPressureIterations: " << maxPressureIterations << std::endl;
+void Settings::printSettings() {
+    std::cout << "Settings: " << std::endl
+        << "  physicalSize: " << physicalSize[0] << " x " << physicalSize[1] << ", nCells: " << nCells[0] << " x "
+        << nCells[1] << std::endl
+        << "  endTime: " << endTime << " s, re: " << re << ", g: (" << g[0] << "," << g[1] << "), tau: " << tau
+        << ", maximum dt: " << maximumDt << std::endl
+        << "  dirichletBC: bottom: (" << dirichletBcBottom[0] << "," << dirichletBcBottom[1] << ")"
+        << ", top: (" << dirichletBcTop[0] << "," << dirichletBcTop[1] << ")"
+        << ", left: (" << dirichletBcLeft[0] << "," << dirichletBcLeft[1] << ")"
+        << ", right: (" << dirichletBcRight[0] << "," << dirichletBcRight[1] << ")" << std::endl
+        << "  useDonorCell: " << std::boolalpha << useDonorCell << ", alpha: " << alpha << std::endl
+        << "  pressureSolver: " << pressureSolver << ", omega: " << omega << ", epsilon: " << epsilon
+        << ", maximumNumberOfIterations: " << maximumNumberOfIterations << std::endl;
 }

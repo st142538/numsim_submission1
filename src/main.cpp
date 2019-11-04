@@ -2,7 +2,16 @@
 
 int main(int argc, char *argv[]) 
 {
-    Computation computation("parameters.txt");
+    if (argc <= 1)
+    {
+        std::cout << "Please specify a parameters file." << std::endl;
+        return 0;
+    }
+
+    // parse path for parameters file
+    std::string parametersFilePath = argv[1];
+
+    Computation computation(parametersFilePath);
     computation.testSettings();
-    computation.runSimulation();
+    //computation.runSimulation();
 }

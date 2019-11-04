@@ -1,4 +1,5 @@
 #include "computation.h"
+
 Computation::Computation(std::string parameterFileName) : settings_()
 {
     settings_.loadFromFile(parameterFileName);
@@ -10,23 +11,23 @@ Computation::Computation(std::string parameterFileName) : settings_()
     dt_ = settings_.maximumDt;
 
     // instantiate the discretization
-    if (settings_.discretizationType == "CD")
+    if (settings_.useDonorCell)
+    {
+        discretization_ = std::make_shared<DonorCell>(nCellsWithBoundary, meshWidth_, settings_.alpha);
+    }
+    else // means central differences
     {
         discretization_ = std::make_shared<CentralDifferences>(nCellsWithBoundary, meshWidth_);
     }
-    else // means DC
-    {
-        discretization_ = std::make_shared<DonorCell>(nCellsWithBoundary, meshWidth_, settings_.alphaDC);
-    }
 
     // instatiate the pressure solver
-    if (settings_.discretizationType == "GaussSeidel")
+    if (settings_.pressureSolver == "SOR")
+    {
+        pressureSolver_ = std::make_shared<SOR>(discretization_, settings_.omega);
+    }
+    else // means GausSeidel
     {
         pressureSolver_ = std::make_shared<GaussSeidel>(discretization_);
-    }
-    else // means SOR
-    {
-        pressureSolver_ = std::make_shared<SOR>(discretization_, settings_.omegaSOR);
     }
 
     // instatiate the outputWriter
@@ -42,6 +43,7 @@ void Computation::computeMeshWidth()
 
 void Computation::computeTimeStepWidth()
 {
+    // TODO only check maximum velocities of inner grids
     // TODO Notation
     // compute all four upper limits for the time step width
     double upper_limit1 = 0.5 
@@ -58,8 +60,6 @@ void Computation::computeTimeStepWidth()
     // set the time step width to the minimum of all four possibilities times safety factor tau
     dt_ = settings_.tau * std::min( std::min(upper_limit1,upper_limit2), std::min(upper_limit3, upper_limit4) );
 }
-
-
 
 void Computation::computePreliminaryVelocities()
 {
@@ -293,9 +293,9 @@ void Computation::runSimulation()
         computePreliminaryVelocitiesBoundary();
         computerightHandSide();
         int it = 0;
-        double squared_residual = 1.0 / 0.0;
-        while ((it < settings_.maxPressureIterations) && (std::sqrt(squared_residual) > settings_.epsilonTol)) {
-            squared_residual = pressureSolver_->iterate();
+        double squaredResidual = 1.0 / 0.0;
+        while ((it < settings_.maximumNumberOfIterations) && (std::sqrt(squaredResidual) > settings_.epsilon)) {
+            squaredResidual = pressureSolver_->iterate();
             computePressureBoundaries();
             it++;
         }
