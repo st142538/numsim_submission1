@@ -55,10 +55,14 @@ public:
 
     Computation(std::string parameterFileName);
     
+    //! some test methods for different functions
     void testDiscretization();
     void testTimestep();
     void testInterpolation();
 
+    //! prints the settings from given input file
     void printSettings();
+
+    //! runs simulation from given input file
     void runSimulation();
 };

@@ -240,11 +240,6 @@ void Computation::testDiscretization()
     }
 }
 
-void Computation::printSettings()
-{
-    settings_.printSettings();
-}
-
 void Computation::testTimestep()
 {
     std::cout << "previous dt: " << dt_ << std::endl;
@@ -262,6 +257,11 @@ void Computation::testInterpolation()
     std::cout << "test: " << discretization_->u.interpolateAt(1.0-0.5*meshWidth_[0], 2.0*meshWidth_[1]) << std::endl;
 }
 
+void Computation::printSettings()
+{
+    settings_.printSettings();
+}
+
 void Computation::runSimulation()
 {   
     // begin with time stamp
@@ -270,19 +270,25 @@ void Computation::runSimulation()
     // start up simulation
     double currentTime = 0.0;
     int step = 0;
+    int totalNumberOfInnerCells = settings_.nCells[0] * settings_.nCells[1];
 
     // time step loop
     while (currentTime < settings_.endTime)
     {
-        computeTimeStepWidth();
         computeVelocityBoundaries();
         computePressureBoundaries();
+        computeTimeStepWidth();
+        // correct last time step of simulation to fit endTime exactly 
+        if (currentTime + dt_ > settings_.endTime) {
+            dt_ = settings_.endTime - currentTime;
+        }
         computePreliminaryVelocities();
         computePreliminaryVelocitiesBoundary();
         computerightHandSide();
         int it = 0;
         double squaredResidual = 1.0 / 0.0;
-        while ((it < settings_.maximumNumberOfIterations) && (std::sqrt(squaredResidual) > settings_.epsilon))
+        while ((it < settings_.maximumNumberOfIterations) 
+            && (squaredResidual / totalNumberOfInnerCells > settings_.epsilon*settings_.epsilon))
         {
             squaredResidual = pressureSolver_->iterate();
             computePressureBoundaries();
