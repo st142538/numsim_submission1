@@ -43,22 +43,19 @@ void Computation::computeMeshWidth()
 
 void Computation::computeTimeStepWidth()
 {
-    // TODO only check maximum velocities of inner grids
-    // TODO Notation
     // compute all four upper limits for the time step width
-    double upper_limit1 = 0.5 
-        * settings_.re 
+    double upper_limit1 = settings_.tau  
+        * 0.5 * settings_.re 
         * std::pow(meshWidth_[0]*meshWidth_[1],2) 
         / (std::pow(meshWidth_[0],2) + std::pow(meshWidth_[1],2));
     double max_abs_u = std::max(std::abs(discretization_->u.min()), std::abs(discretization_->u.max()));
     double max_abs_v = std::max(std::abs(discretization_->v.min()), std::abs(discretization_->v.max()));
-    double upper_limit2 = meshWidth_[0] / max_abs_u;
-    double upper_limit3 = meshWidth_[1] / max_abs_v;
+    double upper_limit2 = settings_.tau * meshWidth_[0] / max_abs_u;
+    double upper_limit3 = settings_.tau * meshWidth_[1] / max_abs_v;
     double upper_limit4 = settings_.maximumDt;
 
-    // TODO min auf alle elemente
     // set the time step width to the minimum of all four possibilities times safety factor tau
-    dt_ = settings_.tau * std::min( std::min(upper_limit1,upper_limit2), std::min(upper_limit3, upper_limit4) );
+    dt_ = std::min( {upper_limit1, upper_limit2, upper_limit3, upper_limit4} );
 }
 
 void Computation::computePreliminaryVelocities()
@@ -124,16 +121,6 @@ void Computation::computerightHandSide()
 
 void Computation::computePressureBoundaries()
 {
-    // set the 4 corner boundary cells
-    discretization_->p(0, 0) 
-        = discretization_->p(1, 1);                                                             // bottom left
-    discretization_->p(discretization_->p.sizeX() - 1, 0) 
-        = discretization_->p(discretization_->p.sizeX() - 2, 1);                                // bottom right
-    discretization_->p(0, discretization_->p.sizeY() - 1) 
-        = discretization_->p(1, discretization_->p.sizeY() - 2);                                // top left
-    discretization_->p(discretization_->p.sizeX() - 1, discretization_->p.sizeY() - 1) 
-        = discretization_->p(discretization_->p.sizeX() - 2, discretization_->p.sizeY() - 2);   // top right
-
     // set the top and bottom boundaries edges except corner cells
     for (int i = 1; i < discretization_->p.sizeX() - 1; ++i)
     {
@@ -165,8 +152,8 @@ void Computation::computeVelocityBoundaries()
             = settings_.dirichletBcRight[0];
     }
     // set the bottom and top boundary edge for u (velocity in x direction)
-    // with the corner cells
-    for (int i = 0; i < discretization_->u.sizeX(); ++i)
+    // except the corner cells
+    for (int i = 1; i < discretization_->u.sizeX() - 1; ++i)
     {
         discretization_->u(i, 0) 
             = 2 * settings_.dirichletBcBottom[0] - discretization_->u(i, 1);
@@ -185,8 +172,8 @@ void Computation::computeVelocityBoundaries()
     }
 
     // set the left and right boundary edge for v (velocity in y direction)
-    // with the corner cells
-    for (int j = 0; j < discretization_->v.sizeY(); ++j)
+    // except the corner cells
+    for (int j = 1; j < discretization_->v.sizeY() - 1; ++j)
     {
         discretization_->v(0, j) 
             = 2 * settings_.dirichletBcLeft[1] - discretization_->v(1, j);
@@ -283,9 +270,6 @@ void Computation::runSimulation()
     // start up simulation
     double currentTime = 0.0;
     int step = 0;
-    computeVelocityBoundaries();
-    computePressureBoundaries();
-    outputWriter_->writeFile(currentTime);
 
     // time step loop
     while (currentTime < settings_.endTime)
@@ -318,10 +302,6 @@ void Computation::runSimulation()
             << ", pressure solver iterations: " << it << std::endl;
         
     }
-
-    // end stuff
-    computeVelocityBoundaries();
-    computePressureBoundaries();
 
     // stop time
     auto end = std::chrono::steady_clock::now();
