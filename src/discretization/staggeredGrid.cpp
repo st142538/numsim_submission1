@@ -16,3 +16,12 @@ StaggeredGrid::~StaggeredGrid()
 {
     // TODO: check if member variables has to be deleted manually
 }
+
+double StaggeredGrid::dx() const
+{
+    return meshWidth_[0];
+}
+double StaggeredGrid::dy() const
+{
+    return meshWidth_[1];
+}

@@ -9,6 +9,9 @@
  */
 class StaggeredGrid
 {
+private:
+    std::array<double,2> meshWidth_;
+
 public:
     FieldVariable u;    //< field varaible for velocity in x direction
     FieldVariable v;    //< field varaible for velocity in y direction
@@ -23,5 +26,6 @@ public:
     //! destructor
     ~StaggeredGrid();
 
-    std::array<double,2> meshWidth_;
+    double dx() const;
+    double dy() const;
 };

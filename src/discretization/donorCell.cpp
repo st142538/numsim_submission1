@@ -16,7 +16,7 @@ double DonorCell::computeDu2Dx(int i, int j) const
     double firstSum = std::pow(avgURightPlus,2) - std::pow(avgULeftPlus,2);
     double secondSum = std::abs(avgURightPlus) * avgURightMinus - std::abs(avgULeftPlus) * avgULeftMinus;
     
-    return (firstSum + alphaDC_ * secondSum) / meshWidth_[0];
+    return (firstSum + alphaDC_ * secondSum) / dx();
 }
 
 double DonorCell::computeDv2Dy(int i, int j) const
@@ -29,7 +29,7 @@ double DonorCell::computeDv2Dy(int i, int j) const
     double firstSum = std::pow(avgVTopPlus,2) - std::pow(avgVBottomPlus,2);
     double secondSum = std::abs(avgVTopPlus) * avgVTopMinus - std::abs(avgVBottomPlus) * avgVBottomMinus;
     
-    return (firstSum + alphaDC_ * secondSum) / meshWidth_[1];
+    return (firstSum + alphaDC_ * secondSum) / dy();
 }
 
 double DonorCell::computeDuvDx(int i, int j) const
@@ -44,7 +44,7 @@ double DonorCell::computeDuvDx(int i, int j) const
     double firstSum = avgUTop * avgVRightPlus - avgUTop2 * avgVLeftPlus;
     double secondSum = std::abs(avgUTop) * avgVRightMinus - std::abs(avgUTop2) * avgVLeftMinus;
 
-    return (firstSum + alphaDC_ * secondSum) / meshWidth_[0];
+    return (firstSum + alphaDC_ * secondSum) / dx();
 }
 
 double DonorCell::computeDuvDy(int i, int j) const
@@ -59,5 +59,5 @@ double DonorCell::computeDuvDy(int i, int j) const
     double firstSum = avgVRight * avgUTopPlus - avgVRight2 * avgUBottomPlus;
     double secondSum = std::abs(avgVRight) * avgUTopMinus - std::abs(avgVRight2) * avgUBottomMinus;
 
-    return (firstSum + alphaDC_ * secondSum) / meshWidth_[1];
+    return (firstSum + alphaDC_ * secondSum) / dy();
 }

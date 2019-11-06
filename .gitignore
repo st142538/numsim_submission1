@@ -37,3 +37,6 @@
 # our executable
 numsim_debug
 numsim_release
+
+# build files
+build/*

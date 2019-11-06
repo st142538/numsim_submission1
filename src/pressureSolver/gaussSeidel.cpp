@@ -9,8 +9,8 @@ GaussSeidel::GaussSeidel(std::shared_ptr<Discretization> discretization) :
 double GaussSeidel::iterate() const
 {
     double factor = 0.5
-    * (std::pow(discretization_->meshWidth_[0], 2) * std::pow(discretization_->meshWidth_[1], 2)) 
-    / (std::pow(discretization_->meshWidth_[0], 2) + std::pow(discretization_->meshWidth_[1], 2));
+    * (std::pow(discretization_->dx(), 2) * std::pow(discretization_->dy(), 2)) 
+    / (std::pow(discretization_->dx(), 2) + std::pow(discretization_->dy(), 2));
 
     double residual = 0.0;
 
@@ -21,9 +21,9 @@ double GaussSeidel::iterate() const
         {
             discretization_->p(i,j) = factor 
                 * ((discretization_->p(i-1,j) + discretization_->p(i+1,j)) 
-                    / std::pow(discretization_->meshWidth_[0], 2)
+                    / std::pow(discretization_->dx(), 2)
                     + (discretization_->p(i,j-1) + discretization_->p(i,j+1)) 
-                    / std::pow(discretization_->meshWidth_[1], 2) 
+                    / std::pow(discretization_->dy(), 2) 
                     - discretization_->rhs(i,j));
         }
     }
@@ -36,9 +36,9 @@ double GaussSeidel::iterate() const
             residual += std::pow(
                 discretization_->rhs(i,j) 
                     - (discretization_->p(i-1,j) - 2 * discretization_->p(i,j) + discretization_->p(i+1,j)) 
-                        / std::pow(discretization_->meshWidth_[0],2) 
+                        / std::pow(discretization_->dx(),2) 
                     - (discretization_->p(i,j-1) - 2 * discretization_->p(i,j) + discretization_->p(i,j+1)) 
-                        / std::pow(discretization_->meshWidth_[1],2)
+                        / std::pow(discretization_->dy(),2)
                 ,2);
         }
     }
