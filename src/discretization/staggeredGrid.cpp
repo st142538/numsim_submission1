@@ -29,60 +29,60 @@ double StaggeredGrid::dy() const
 
 int StaggeredGrid::uIBegin() const
 {
-    return 0;
+    return -1;
 }
 
 int StaggeredGrid::uJBegin() const
 {
-    return 1;
+    return -1;
 }
 
 int StaggeredGrid::uIEnd() const
 {
-    return u.sizeX()-1;
+    return u.sizeX() - 1;
 }
 
 int StaggeredGrid::uJEnd() const
 {
-    return u.sizeY()-2;
+    return u.sizeY() - 1;
 }
 
 int StaggeredGrid::vIBegin() const
 {
-    return 1;
+    return -1;
 }
 
 int StaggeredGrid::vJBegin() const
 {
-    return 0;
+    return -1;
 }
 
 int StaggeredGrid::vIEnd() const
 {
-    return v.sizeX()-2;
+    return v.sizeX() - 1;
 }
 
 int StaggeredGrid::vJEnd() const
 {
-    return v.sizeY()-1;
+    return v.sizeY() - 1;
 }
 
 int StaggeredGrid::pIBegin() const
 {
-    return 1;
+    return -1;
 }
 
 int StaggeredGrid::pJBegin() const
 {
-    return 1;
+    return -1;
 }
 
 int StaggeredGrid::pIEnd() const
 {
-    return p.sizeX()-2;
+    return p.sizeX() - 1;
 }
 
 int StaggeredGrid::pJEnd() const
 {
-    return p.sizeY()-2;
+    return p.sizeY() - 1;
 }

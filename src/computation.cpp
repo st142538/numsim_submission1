@@ -121,6 +121,16 @@ void Computation::computerightHandSide()
 
 void Computation::computePressureBoundaries()
 {
+     // set the 4 corner boundary cells
+    discretization_->p(0, 0) 
+        = discretization_->p(1, 1);                                                             // bottom left
+    discretization_->p(discretization_->p.sizeX() - 1, 0) 
+        = discretization_->p(discretization_->p.sizeX() - 2, 1);                                // bottom right
+    discretization_->p(0, discretization_->p.sizeY() - 1) 
+        = discretization_->p(1, discretization_->p.sizeY() - 2);                                // top left
+    discretization_->p(discretization_->p.sizeX() - 1, discretization_->p.sizeY() - 1) 
+        = discretization_->p(discretization_->p.sizeX() - 2, discretization_->p.sizeY() - 2);   // top right
+
     // set the top and bottom boundaries edges except corner cells
     for (int i = 1; i < discretization_->p.sizeX() - 1; ++i)
     {
@@ -143,8 +153,8 @@ void Computation::computePressureBoundaries()
 void Computation::computeVelocityBoundaries()
 {
     // set the left and right boundary edge for u (velocity in x direction)
-    // except the corner cells
-    for (int j = 1; j < discretization_->u.sizeY() - 1; ++j)
+    // with the corner cells
+    for (int j = 0; j < discretization_->u.sizeY() - 1; ++j)
     {
         discretization_->u(0, j) 
             = settings_.dirichletBcLeft[0];
@@ -152,8 +162,8 @@ void Computation::computeVelocityBoundaries()
             = settings_.dirichletBcRight[0];
     }
     // set the bottom and top boundary edge for u (velocity in x direction)
-    // with the corner cells
-    for (int i = 0; i < discretization_->u.sizeX(); ++i)
+    // except the corner cells
+    for (int i = 1; i < discretization_->u.sizeX() - 1; ++i)
     {
         discretization_->u(i, 0) 
             = 2 * settings_.dirichletBcBottom[0] - discretization_->u(i, 1);
@@ -162,8 +172,8 @@ void Computation::computeVelocityBoundaries()
     }
 
     // set the bottom and top boundary edge for v (velocity in y direction)
-    // except the corner cells
-    for (int i = 1; i < discretization_->v.sizeX() - 1; ++i)
+    // with the corner cells
+    for (int i = 0; i < discretization_->v.sizeX(); ++i)
     {
         discretization_->v(i, 0) 
             = settings_.dirichletBcBottom[1];
@@ -172,8 +182,8 @@ void Computation::computeVelocityBoundaries()
     }
 
     // set the left and right boundary edge for v (velocity in y direction)
-    // with the corner cells
-    for (int j = 0; j < discretization_->v.sizeY(); ++j)
+    // except the corner cells
+    for (int j = 1; j < discretization_->v.sizeY() - 1; ++j)
     {
         discretization_->v(0, j) 
             = 2 * settings_.dirichletBcLeft[1] - discretization_->v(1, j);
