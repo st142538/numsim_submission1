@@ -14,7 +14,7 @@ public:
   OutputWriter(std::shared_ptr<Discretization> discretization);
 
   //! destructor
-  ~OutputWriter();
+  virtual ~OutputWriter();
 
   //! write current velocities to file, filename is output_<count>.vti
   virtual void writeFile(double currentTime) = 0;

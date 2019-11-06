@@ -17,13 +17,13 @@ class OutputWriterText :
 {
 public:
   //! use constructor of base class
-  using OutputWriter::OutputWriter;
+  //using OutputWriter::OutputWriter;
+  OutputWriterText(std::shared_ptr<Discretization> discretization);
 
   //! write current velocities to file, filename is output_<count>.txt
   void writeFile(double currentTime);
 
   //! write only current values of pressure to file, filename is pressure_<count>.txt
   void writePressureFile();
-
 
 };

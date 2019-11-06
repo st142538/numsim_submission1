@@ -1,5 +1,11 @@
 #include "outputWriterText.h"
 
+OutputWriterText::OutputWriterText(std::shared_ptr<Discretization> discretization) :
+	OutputWriter(discretization)
+{
+
+}
+
 void OutputWriterText::writeFile(double currentTime)
 {
 	// Assemble the filename
@@ -40,7 +46,7 @@ void OutputWriterText::writeFile(double currentTime)
 	{
 		file << std::setw(fieldWidth) << i;
 	}
-	file << std::endl << std::string(fieldWidth*(discretization_->u.sizeX+2)+1, '-') << std::endl;
+	file << std::endl << std::string(fieldWidth*(discretization_->u.sizeX()+2)+1, '-') << std::endl;
 
 	// write u values
 	for (int j = discretization_->uJEnd()-1; j >= discretization_->uJBegin(); j--)

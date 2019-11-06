@@ -9,7 +9,8 @@ add_executable(${PROJECT_NAME}
    main.cpp
    computation.cpp 
    outputWriter/outputWriter.cpp 
-   outputWriter/outputWriterParaview.cpp 
+   outputWriter/outputWriterParaview.cpp
+   outputWriter/outputWriterText.cpp
    pressureSolver/pressureSolver.cpp 
    pressureSolver/sor.cpp 
    pressureSolver/gaussSeidel.cpp 
