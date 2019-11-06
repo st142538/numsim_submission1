@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../discretization/discretization.h"
-
 #include <memory>
+#include <iostream>
 
 /** Inteface class for writing simulation data output.
  */
@@ -12,6 +12,9 @@ public:
   //! constructor
   //! @param discretization shared pointer to the discretization object that will contain all the data to be written to the file
   OutputWriter(std::shared_ptr<Discretization> discretization);
+
+  //! destructor
+  ~OutputWriter();
 
   //! write current velocities to file, filename is output_<count>.vti
   virtual void writeFile(double currentTime) = 0;

@@ -40,4 +40,9 @@ public:
 
     //! compute the 1st derivative ∂ p / ∂y
     virtual double computeDpDy(int i, int j) const;
+
+
+
+
+
 };

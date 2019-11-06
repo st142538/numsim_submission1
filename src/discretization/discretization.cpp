@@ -41,3 +41,4 @@ double Discretization::computeDpDy(int i, int j) const
     // and lays on the v point
     return (p(i,j+1) - p(i,j)) / dy();
 }
+

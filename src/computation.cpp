@@ -31,7 +31,7 @@ Computation::Computation(std::string parameterFileName) : settings_()
     }
 
     // instatiate the outputWriter
-    outputWriter_ = std::make_shared<OutputWriterParaview>(discretization_);
+    outputWriter_ = std::make_shared<OutputWriterText>(discretization_);
 }
 
 void Computation::computeMeshWidth()

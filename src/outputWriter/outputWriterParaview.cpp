@@ -1,9 +1,5 @@
 #include "outputWriterParaview.h"
 
-#include <vtkImageData.h>
-#include <vtkDoubleArray.h>
-#include <vtkPointData.h>
-
 OutputWriterParaview::OutputWriterParaview(std::shared_ptr<Discretization> discretization) :
    OutputWriter(discretization)
 {

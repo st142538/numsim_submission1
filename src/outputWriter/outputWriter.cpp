@@ -1,7 +1,5 @@
 #include "outputWriter.h"
 
-#include <iostream>
-
 OutputWriter::OutputWriter(std::shared_ptr<Discretization> discretization)
  : discretization_(discretization), fileNo_(0)
 {
@@ -9,4 +7,9 @@ OutputWriter::OutputWriter(std::shared_ptr<Discretization> discretization)
   int returnValue = system("mkdir -p out");
   if (returnValue != 0)
     std::cout << "Could not create subdirectory \"out\"." << std::endl;
+}
+
+OutputWriter::~OutputWriter()
+{
+  
 }

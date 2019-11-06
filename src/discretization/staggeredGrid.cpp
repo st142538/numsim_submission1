@@ -21,7 +21,68 @@ double StaggeredGrid::dx() const
 {
     return meshWidth_[0];
 }
+
 double StaggeredGrid::dy() const
 {
     return meshWidth_[1];
+}
+
+int StaggeredGrid::uIBegin() const
+{
+    return 0;
+}
+
+int StaggeredGrid::uJBegin() const
+{
+    return 1;
+}
+
+int StaggeredGrid::uIEnd() const
+{
+    return u.sizeX()-1;
+}
+
+int StaggeredGrid::uJEnd() const
+{
+    return u.sizeY()-2;
+}
+
+int StaggeredGrid::vIBegin() const
+{
+    return 1;
+}
+
+int StaggeredGrid::vJBegin() const
+{
+    return 0;
+}
+
+int StaggeredGrid::vIEnd() const
+{
+    return v.sizeX()-2;
+}
+
+int StaggeredGrid::vJEnd() const
+{
+    return v.sizeY()-1;
+}
+
+int StaggeredGrid::pIBegin() const
+{
+    return 1;
+}
+
+int StaggeredGrid::pJBegin() const
+{
+    return 1;
+}
+
+int StaggeredGrid::pIEnd() const
+{
+    return p.sizeX()-2;
+}
+
+int StaggeredGrid::pJEnd() const
+{
+    return p.sizeY()-2;
 }

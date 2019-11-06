@@ -1,9 +1,12 @@
 #pragma once
 
 #include "outputWriter.h"
-
+#include "../discretization/discretization.h"
 #include <vtkSmartPointer.h>
 #include <vtkXMLImageDataWriter.h>
+#include <vtkImageData.h>
+#include <vtkDoubleArray.h>
+#include <vtkPointData.h>
 
 #include <memory>
 

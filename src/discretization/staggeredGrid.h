@@ -28,4 +28,16 @@ public:
 
     double dx() const;
     double dy() const;
+    int uIBegin() const;
+    int uJBegin() const;
+    int uIEnd() const;
+    int uJEnd() const;
+    int vIBegin() const;
+    int vJBegin() const;
+    int vIEnd() const;
+    int vJEnd() const;
+    int pIBegin() const;
+    int pJBegin() const;
+    int pIEnd() const;
+    int pJEnd() const;
 };

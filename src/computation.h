@@ -9,7 +9,7 @@
 #include "pressureSolver/sor.h"
 #include "outputWriter/outputWriter.h"
 #include "outputWriter/outputWriterParaview.h"
-//#include "outputWriter/outputWriterText.h"
+#include "outputWriter/outputWriterText.h"
 #include <vector>
 #include <array>
 #include <iostream>
