@@ -19,3 +19,13 @@
         newSource.cpp
      )
 
+Helpfull things:
+
+Link for excercise  https://numsim-exercises.readthedocs.io/en/latest/
+Link for abgaben    http://opendihu-ci/?icansubmit (abgabe immer möglich)
+respectivly         http://129.69.213.149/?icansubmit
+
+without the ?icansubmit there is the normal time limit.
+
+
+Zip for abgaben     zip -r submission.zip src/ CMakeLists.txt

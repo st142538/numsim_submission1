@@ -155,7 +155,7 @@ void Computation::computeVelocityBoundaries()
 {
     // set the left and right boundary edge for u (velocity in x direction)
     // with the corner cells
-    for (int j = 0; j < discretization_->u.sizeY() - 1; ++j)
+    for (int j = 0; j < discretization_->u.sizeY(); ++j)
     {
         discretization_->u(0, j) 
             = settings_.dirichletBcLeft[0];
@@ -307,6 +307,7 @@ void Computation::runSimulation()
             it++;
         }
         computeNewVelocities();
+        computeVelocityBoundaries();
         currentTime += dt_;
         step++;
     
