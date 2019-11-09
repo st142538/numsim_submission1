@@ -15,5 +15,8 @@ public:
     PressureSolver(std::shared_ptr<Discretization> discretization);
 
     //! iterate one step of pressure solver and returns squared residual
-    virtual double iterate() const = 0;
+    virtual void iterate() const = 0;
+
+    //! calculate squared residual
+    double squaredResidual() const;
 };

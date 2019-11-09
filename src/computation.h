@@ -27,6 +27,7 @@ class Computation
     std::shared_ptr<Discretization> discretization_;
     std::shared_ptr<PressureSolver> pressureSolver_;
     std::shared_ptr<OutputWriter> outputWriter_;
+    std::shared_ptr<OutputWriter> outputWriter2_;
     std::array<double,2> meshWidth_;
     double dt_;
 

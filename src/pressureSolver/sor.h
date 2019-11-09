@@ -16,6 +16,6 @@ public:
 
     SOR(std::shared_ptr<Discretization> discretization, double omegaSOR);
 
-    //! iterate one step of SOR solver and returns squared residual
-    double iterate() const;
+    //! iterate one step of SOR solver 
+    void iterate() const;
 };

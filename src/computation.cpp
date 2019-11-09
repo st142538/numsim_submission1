@@ -20,18 +20,19 @@ Computation::Computation(std::string parameterFileName) : settings_()
         discretization_ = std::make_shared<CentralDifferences>(nCellsWithBoundary, meshWidth_);
     }
 
-    // instatiate the pressure solver
+    // instantiate the pressure solver
     if (settings_.pressureSolver == "SOR")
     {
         pressureSolver_ = std::make_shared<SOR>(discretization_, settings_.omega);
     }
-    else // means GausSeidel
+    else // means GaussSeidel
     {
         pressureSolver_ = std::make_shared<GaussSeidel>(discretization_);
     }
 
-    // instatiate the outputWriter
-    outputWriter_ = std::make_shared<OutputWriterText>(discretization_);
+    // instantiate the outputWriters
+    outputWriter_ = std::make_shared<OutputWriterParaview>(discretization_);
+    outputWriter2_ = std::make_shared<OutputWriterText>(discretization_);
 }
 
 void Computation::computeMeshWidth()
@@ -121,7 +122,7 @@ void Computation::computerightHandSide()
 
 void Computation::computePressureBoundaries()
 {
-     // set the 4 corner boundary cells
+    // set the 4 corner boundary cells
     discretization_->p(0, 0) 
         = discretization_->p(1, 1);                                                             // bottom left
     discretization_->p(discretization_->p.sizeX() - 1, 0) 
@@ -296,12 +297,13 @@ void Computation::runSimulation()
         computePreliminaryVelocitiesBoundary();
         computerightHandSide();
         int it = 0;
-        double squaredResidual = 1.0 / 0.0;
+        double squaredResidual = std::numeric_limits<double>::max();
         while ((it < settings_.maximumNumberOfIterations) 
             && (squaredResidual / totalNumberOfInnerCells > settings_.epsilon*settings_.epsilon))
         {
-            squaredResidual = pressureSolver_->iterate();
+            pressureSolver_->iterate();
             computePressureBoundaries();
+            squaredResidual = pressureSolver_->squaredResidual();
             it++;
         }
         computeNewVelocities();
@@ -310,6 +312,7 @@ void Computation::runSimulation()
     
         // write current field variables to file
         outputWriter_->writeFile(currentTime);
+        outputWriter2_->writeFile(currentTime);
 
         // print time step information to console
         std::cout << step 
@@ -322,6 +325,6 @@ void Computation::runSimulation()
     // stop time
     auto end = std::chrono::steady_clock::now();
     std::cout << "Elapsed Time: " 
-        << std::chrono::duration_cast<std::chrono::seconds>(end - start).count() 
+        << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() / 1000.0 
         << " sec" << std::endl;
 }

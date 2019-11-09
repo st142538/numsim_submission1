@@ -23,8 +23,8 @@ double DonorCell::computeDv2Dy(int i, int j) const
 {
     double avgVTopPlus = (v(i,j+1) + v(i,j)) / 2.0;
     double avgVBottomPlus = (v(i,j) + v(i,j-1)) / 2.0;
-    double avgVTopMinus = (v(i,j+1) - v(i,j)) / 2.0;
-    double avgVBottomMinus = (v(i,j) - v(i,j-1)) / 2.0;
+    double avgVTopMinus = (v(i,j) - v(i,j+1)) / 2.0;
+    double avgVBottomMinus = (v(i,j-1) - v(i,j)) / 2.0;
 
     double firstSum = std::pow(avgVTopPlus,2) - std::pow(avgVBottomPlus,2);
     double secondSum = std::abs(avgVTopPlus) * avgVTopMinus - std::abs(avgVBottomPlus) * avgVBottomMinus;

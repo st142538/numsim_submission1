@@ -13,6 +13,6 @@ public:
 
     GaussSeidel(std::shared_ptr<Discretization> discretization);
 
-    //! iterate one step of gauss seidel solver and returns squared residual
-    double iterate() const;
+    //! iterate one step of gauss seidel solver
+    void iterate() const;
 };
