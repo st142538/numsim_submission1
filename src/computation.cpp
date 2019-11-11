@@ -93,21 +93,15 @@ void Computation::computePreliminaryVelocitiesBoundary()
     // calculate helper variable A and set F for boundary points
     for (int j = 0; j < discretization_->f.sizeY(); ++j)
     {
-        //discretization_->f(0,j) = settings_.dirichletBcLeft[0];
-        //discretization_->f(discretization_->f.sizeX() - 1,j) = settings_.dirichletBcRight[0];
-        // bug fix szenario 3
-        discretization_->f(0,j) = 0.0;
-        discretization_->f(discretization_->f.sizeX() - 1,j) = 0.0;
+        discretization_->f(0,j) = settings_.dirichletBcLeft[0];
+        discretization_->f(discretization_->f.sizeX() - 1,j) = settings_.dirichletBcRight[0];
     }
 
     // calculate helper variable B and set G for boundary points
     for (int i = 0; i < discretization_->g.sizeX(); ++i)
     {
-        //discretization_->g(i,0) = settings_.dirichletBcBottom[1];
-        //discretization_->g(i,discretization_->g.sizeY() - 1) = settings_.dirichletBcTop[1];
-        // bug fix szenario 3
-        discretization_->g(i,0) = 0.0;
-        discretization_->g(i,discretization_->g.sizeY() - 1) = 0.0;
+        discretization_->g(i,0) = settings_.dirichletBcBottom[1];
+        discretization_->g(i,discretization_->g.sizeY() - 1) = settings_.dirichletBcTop[1];
     }
 }
 
@@ -161,7 +155,7 @@ void Computation::computeVelocityBoundaries()
 {
     // set the left and right boundary edge for u (velocity in x direction)
     // with the corner cells
-    for (int j = 0; j < discretization_->u.sizeY(); ++j)
+    for (int j = 0; j < discretization_->u.sizeY() ; ++j)
     {
         discretization_->u(0, j) 
             = settings_.dirichletBcLeft[0];
@@ -179,8 +173,8 @@ void Computation::computeVelocityBoundaries()
     }
 
     // set the bottom and top boundary edge for v (velocity in y direction)
-    // with the corner cells
-    for (int i = 0; i < discretization_->v.sizeX(); ++i)
+    // except the corner cells
+    for (int i = 1; i < discretization_->v.sizeX() - 1; ++i)
     {
         discretization_->v(i, 0) 
             = settings_.dirichletBcBottom[1];
@@ -189,14 +183,33 @@ void Computation::computeVelocityBoundaries()
     }
 
     // set the left and right boundary edge for v (velocity in y direction)
-    // except the corner cells
-    for (int j = 1; j < discretization_->v.sizeY() - 1; ++j)
+    // with the corner cells
+    for (int j = 0; j < discretization_->v.sizeY(); ++j)
     {
         discretization_->v(0, j) 
             = 2 * settings_.dirichletBcLeft[1] - discretization_->v(1, j);
         discretization_->v(discretization_->v.sizeX() - 1, j) 
             = 2 * settings_.dirichletBcRight[1] - discretization_->v(discretization_->v.sizeX() - 2, j);
     }
+
+    // bug fix for setting edge boundary: set those loop for the v-loops above
+    // for (int i = 0; i < discretization_->v.sizeX(); ++i)
+    // for (int j = 1; j < discretization_->v.sizeY() - 1; ++j)
+
+    // additional test code: 
+
+    // set the edge cells for u manually
+    //discretization_->u(0, 0) = discretization_->u(0, 1);
+    //discretization_->u(0, discretization_->u.sizeY() - 1) = discretization_->u(0, discretization_->u.sizeY() - 2);
+    //discretization_->u(discretization_->u.sizeX() - 1, 0) = discretization_->u(discretization_->u.sizeX() - 1, 1);
+    //discretization_->u(discretization_->u.sizeX() - 1, discretization_->u.sizeY() - 1) = discretization_->u(discretization_->u.sizeX() - 1, discretization_->u.sizeY() - 2);
+
+    // set the edge cells for v manually
+    //discretization_->v(0, 0) = discretization_->v(1, 0);
+    //discretization_->v(discretization_->v.sizeX() - 1, 0) = discretization_->v(discretization_->v.sizeX() - 2, 0);
+    //discretization_->v(0, discretization_->v.sizeY() - 1) = discretization_->v(1, discretization_->v.sizeY() - 1);
+    //discretization_->v(discretization_->v.sizeX() - 1, discretization_->v.sizeY() - 1) = discretization_->v(discretization_->v.sizeX() - 2, discretization_->v.sizeY() - 1);
+
 }
 
 void Computation::computeNewVelocities()
@@ -300,7 +313,10 @@ void Computation::runSimulation()
             dt_ = settings_.endTime - currentTime;
         }
         computePreliminaryVelocities();
-        computePreliminaryVelocitiesBoundary();
+        
+        // bug fix szenario 3
+        // computePreliminaryVelocitiesBoundary();
+
         computerightHandSide();
         int it = 0;
         double squaredResidual = std::numeric_limits<double>::max();
@@ -313,8 +329,10 @@ void Computation::runSimulation()
             it++;
         }
         computeNewVelocities();
+
         // bug fix -> boundaries should be set, reference is wrong!
-        //computeVelocityBoundaries();
+        // computeVelocityBoundaries();
+
         currentTime += dt_;
         step++;
     
