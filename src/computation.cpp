@@ -93,15 +93,21 @@ void Computation::computePreliminaryVelocitiesBoundary()
     // calculate helper variable A and set F for boundary points
     for (int j = 0; j < discretization_->f.sizeY(); ++j)
     {
-        discretization_->f(0,j) = settings_.dirichletBcLeft[0];
-        discretization_->f(discretization_->f.sizeX() - 1,j) = settings_.dirichletBcRight[0];
+        //discretization_->f(0,j) = settings_.dirichletBcLeft[0];
+        //discretization_->f(discretization_->f.sizeX() - 1,j) = settings_.dirichletBcRight[0];
+        // bug fix szenario 3
+        discretization_->f(0,j) = 0.0;
+        discretization_->f(discretization_->f.sizeX() - 1,j) = 0.0;
     }
 
     // calculate helper variable B and set G for boundary points
     for (int i = 0; i < discretization_->g.sizeX(); ++i)
     {
-        discretization_->g(i,0) = settings_.dirichletBcBottom[1];
-        discretization_->g(i,discretization_->g.sizeY() - 1) = settings_.dirichletBcTop[1];
+        //discretization_->g(i,0) = settings_.dirichletBcBottom[1];
+        //discretization_->g(i,discretization_->g.sizeY() - 1) = settings_.dirichletBcTop[1];
+        // bug fix szenario 3
+        discretization_->g(i,0) = 0.0;
+        discretization_->g(i,discretization_->g.sizeY() - 1) = 0.0;
     }
 }
 
@@ -307,7 +313,8 @@ void Computation::runSimulation()
             it++;
         }
         computeNewVelocities();
-        computeVelocityBoundaries();
+        // bug fix -> boundaries should be set, reference is wrong!
+        //computeVelocityBoundaries();
         currentTime += dt_;
         step++;
     
