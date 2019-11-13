@@ -90,18 +90,32 @@ void Computation::computePreliminaryVelocities()
 
 void Computation::computePreliminaryVelocitiesBoundary()
 {
-    // calculate helper variable A and set F for boundary points
+    // set f boundary left and right
     for (int j = 0; j < discretization_->f.sizeY(); ++j)
     {
-        discretization_->f(0,j) = settings_.dirichletBcLeft[0];
-        discretization_->f(discretization_->f.sizeX() - 1,j) = settings_.dirichletBcRight[0];
+        discretization_->f(0,j) = discretization_->u(0,j);
+        discretization_->f(discretization_->f.sizeX() - 1,j) = discretization_->u(discretization_->f.sizeX() - 1,j);
     }
 
-    // calculate helper variable B and set G for boundary points
-    for (int i = 0; i < discretization_->g.sizeX(); ++i)
+    // set f boundary bottom and top
+    for (int j = 0; j < discretization_->f.sizeX(); ++j)
     {
-        discretization_->g(i,0) = settings_.dirichletBcBottom[1];
-        discretization_->g(i,discretization_->g.sizeY() - 1) = settings_.dirichletBcTop[1];
+        discretization_->f(j,0) = discretization_->u(j,0);
+        discretization_->f(j, discretization_->f.sizeY() - 1) = discretization_->u(j, discretization_->f.sizeY() - 1);
+    }
+
+    // set g boundary left and right
+    for (int j = 0; j < discretization_->g.sizeY(); ++j)
+    {
+        discretization_->g(0,j) = discretization_->v(0,j);
+        discretization_->g(discretization_->g.sizeX() - 1,j) = discretization_->v(discretization_->g.sizeX() - 1,j);
+    }
+
+    // set g boundary bottom and top
+    for (int j = 0; j < discretization_->g.sizeX(); ++j)
+    {
+        discretization_->g(j,0) = discretization_->v(j,0);
+        discretization_->g(j, discretization_->g.sizeY() - 1) = discretization_->v(j, discretization_->g.sizeY() - 1);
     }
 }
 
@@ -315,7 +329,7 @@ void Computation::runSimulation()
         computePreliminaryVelocities();
         
         // bug fix szenario 3
-        // computePreliminaryVelocitiesBoundary();
+        computePreliminaryVelocitiesBoundary();
 
         computerightHandSide();
         int it = 0;
